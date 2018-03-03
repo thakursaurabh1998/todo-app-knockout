@@ -3,30 +3,53 @@ const saveDataLocally = (object) => {
 	localStorage.setItem('todos',ko.toJSON(object.todo()));
 };
 
-// viewModel
-const viewModel = function() {
-	// Observables
-	this.entry = ko.observable();
-	this.todo = ko.observableArray([]);
-	this.left = ko.observable(0);
-	this.tickAll = ko.observable(false);
-	this.selectedA = ko.observable(true);
-	this.selectedActive = ko.observable(false);
-	this.selectedC = ko.observable(false);
-	this.showLeft = ko.observable(0);
+// Class to create new note
+class note {
+	constructor(input,completed=false,editing=false,display=true){
+		this.info = ko.observable(input);
+		this.completed = ko.observable(completed);
+		this.editing = ko.observable(editing);
+		this.display = ko.observable(display);
+	}
+}
 
-	// Class to create new note
-	class note {
-		constructor(input,completed=false,editing=false,display=true){
-			this.info = ko.observable(input);
-			this.completed = ko.observable(completed);
-			this.editing = ko.observable(editing);
-			this.display = ko.observable(display);
-		}
+// viewModel
+class viewModel {
+	constructor(){
+		// Observables
+		this.entry = ko.observable();
+		this.todo = ko.observableArray([]);
+		this.left = ko.observable(0);
+		this.tickAll = ko.observable(false);
+		this.selectedA = ko.observable(true);
+		this.selectedActive = ko.observable(false);
+		this.selectedC = ko.observable(false);
+		this.showLeft = ko.observable(0);
+		// show footer and toggle-all
+		this.showAll = ko.computed(() => {
+			if(this.showLeft()===0)
+				return false;
+			else
+				return true;
+		});
+		// Item left computed
+		this.itemLeft = ko.computed(() => {
+			let left=0;
+			let total=0;
+			for(let a=0;a<this.todo().length;a++){
+				total++;
+			}
+			for(const l of this.todo()){
+				if(l.completed()===false)
+					left++;
+			}
+			this.showLeft(total);
+			this.left(left);
+		});
 	}
 
 	// saving and accessing local storage
-	this.getLocalData = () => {
+	getLocalData(){
 		if(localStorage && localStorage.getItem('todos')) {
 			var data = JSON.parse(localStorage.getItem('todos'));
 			for(const a of data) {
@@ -36,13 +59,13 @@ const viewModel = function() {
 	}
 
 	// Creates a new note object
-	this.createNote = (input) => {
+	createNote(input){
 		const todo = new note(input);
 		return todo;
 	};
 
 	// creating note from user input
-	this.callCreateNote = (data,event) => {
+	callCreateNote(data,event){
 		if(event.keyCode===13 && this.entry()){
 			const newNote = this.createNote(this.entry());
 			this.todo.unshift(newNote);
@@ -54,20 +77,20 @@ const viewModel = function() {
 	};
 
 	// completing a todo
-	this.callCompleteNote = (clickedNote) => {
+	callCompleteNote(clickedNote){
 		clickedNote.completed(!clickedNote.completed());
 		saveDataLocally(this);
 		return true;
 	};
 
 	// editing a note
-	this.callEditNote = (clickedNote) => {
+	callEditNote(clickedNote){
 		clickedNote.editing(!clickedNote.editing());
 		saveDataLocally(this);
 	};
 
 	// delete (remove display)
-	this.callDeleteNote = (clickedNote) => {
+	callDeleteNote(clickedNote){
 		clickedNote.display(!clickedNote.display());
 		clickedNote.completed(true);
 		const n=this.todo().indexOf(clickedNote)
@@ -78,38 +101,17 @@ const viewModel = function() {
 	};
 
 	// cancel editing
-	this.cancelEditingNote = (clickedNote,event) => {
+	cancelEditingNote(clickedNote,event){
 		if(event.keyCode===13)
 			clickedNote.editing(false);
 		else
 			return true;
 	};
 
-	// show footer and toggle-all
-	this.showAll = ko.computed(() => {
-		if(this.showLeft()===0)
-			return false;
-		else
-			return true;
-	});
 
-	// Item left computed
-	this.itemLeft = ko.computed(() => {
-		let left=0;
-		let total=0;
-		for(let a=0;a<this.todo().length;a++){
-			total++;
-		}
-		for(const l of this.todo()){
-			if(l.completed()===false)
-				left++;
-		}
-		this.showLeft(total);
-		this.left(left);
-	});
 
 	// Mark all completed
-	this.markAllComplete = () => {
+	markAllComplete(){
 		this.tickAll(!this.tickAll());
 		for(const a of this.todo())
 			if(this.tickAll())
@@ -121,7 +123,7 @@ const viewModel = function() {
 	};
 
 	// Clear all completed todos
-	this.clearCompleted = () => {
+	clearCompleted(){
 		for(let a=0;a<this.todo().length;a++)
 			if(this.todo()[a].completed()===true){
 				this.todo()[a].display(false);
@@ -134,7 +136,7 @@ const viewModel = function() {
 	};
 
 	// Show all todos
-	this.showAllTodo = () => {
+	showAllTodo(){
 		for(const a of this.todo())
 			a.display(true);
 		this.selectedA(true);
@@ -144,7 +146,7 @@ const viewModel = function() {
 	};
 
 	// Show active todos
-	this.showActive = () => {
+	showActive(){
 		for(const a of this.todo())
 			if(a.completed()===false)
 				a.display(true);
@@ -157,7 +159,7 @@ const viewModel = function() {
 	};
 
 	// Show completed todos
-	this.showCompleted = () => {
+	showCompleted(){
 		for(const a of this.todo())
 			if(a.completed()===true)
 				a.display(true);
