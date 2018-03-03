@@ -30,11 +30,9 @@ const viewModel = function() {
 		if(localStorage && localStorage.getItem('todos')) {
 			var data = JSON.parse(localStorage.getItem('todos'));
 			for(const a of data) {
-				vm.todo.push(new note(a.info,a.editing,a.completed,a.display));
+				vm.todo.push(new note(a.info,a.completed,a.editing,a.display));
 			}
 		}
-		else
-			console.log('be');
 	}
 
 	// Creates a new note object
@@ -58,12 +56,14 @@ const viewModel = function() {
 	// completing a todo
 	this.callCompleteNote = (clickedNote) => {
 		clickedNote.completed(!clickedNote.completed());
+		saveDataLocally(this);
 		return true;
 	};
 
 	// editing a note
 	this.callEditNote = (clickedNote) => {
 		clickedNote.editing(!clickedNote.editing());
+		saveDataLocally(this);
 	};
 
 	// delete (remove display)
@@ -116,6 +116,7 @@ const viewModel = function() {
 				a.completed(true);
 			else
 				a.completed(false);
+
 		saveDataLocally(this);
 	};
 
