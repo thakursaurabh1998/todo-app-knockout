@@ -1,4 +1,4 @@
-/*jshint esversion: 6*/
+
 let notes = [];
 let count = 0;
 
