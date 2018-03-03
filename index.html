@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<title>Template • TodoMVC</title>
+		<title>App • TodoMVC</title>
 		<link rel="stylesheet" href="css/base.css">
 		<link rel="stylesheet" href="css/index.css">
 	</head>
@@ -13,7 +13,6 @@
 				<h1>todos</h1>
 				<input data-bind="textInput: entry, event: {keypress: callCreateNote}" class="new-todo" placeholder="What needs to be done?" autofocus>
 			</header>
-			<!-- This section should be hidden by default and shown when there are todos -->
 			<section class="main">
 				<input data-bind="checked: tickAll" id="toggle-all" class="toggle-all" type="checkbox">
 				<label data-bind="click: markAllComplete, visible: showAll" for="toggle-all">Mark all as complete</label>
@@ -28,11 +27,8 @@
 					</li>
 				</ul>
 			</section>
-			<!-- This footer should hidden by default and shown when there are todos -->
 			<footer data-bind="visible: showAll" class="footer">
-				<!-- This should be `0 items left` by default -->
 				<span class="todo-count"><strong data-bind="text: left"></strong> item left</span>
-				<!-- Remove this if you don't implement routing -->
 				<ul class="filters">
 					<li>
 						<a data-bind="click: showAllTodo, css: {'selected': selectedA}" class="selected" href="#/">All</a>
@@ -44,17 +40,14 @@
 						<a data-bind="click: showCompleted, css: {'selected': selectedC}" href="#/completed">Completed</a>
 					</li>
 				</ul>
-				<!-- Hidden if no completed items are left ↓ -->
 				<button data-bind="click: clearCompleted" class="clear-completed">Clear completed</button>
 			</footer>
 		</section>
 		<footer class="info">
 			<p>Double-click to edit a todo</p>
-			<!-- Change this out with your name and url ↓ -->
 			<p>Created by <a href="https://github.com/thakursaurabh1998" target="blank">Saurabh Thakur</a></p>
 			<p>Part of <a href="http://todomvc.com">TodoMVC</a></p>
 		</footer>
-		<!-- Scripts here. Don't remove ↓ -->
 		<script src="js/base.js"></script>
 		<script src="js/jquery.min.js"></script>
 		<script src="js/knockout.js"></script>

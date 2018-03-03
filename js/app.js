@@ -1,5 +1,7 @@
-let notes = [];
-
+// Storing data locally
+const saveDataLocally = (object) => {
+	localStorage.setItem('todos',ko.toJSON(object.todo()));
+};
 
 // viewModel
 const viewModel = function() {
@@ -15,18 +17,29 @@ const viewModel = function() {
 
 	// Class to create new note
 	class note {
-		constructor(input){
+		constructor(input,completed=false,editing=false,display=true){
 			this.info = ko.observable(input);
-			this.completed = ko.observable(false);
-			this.editing = ko.observable(false);
-			this.display = ko.observable(true);
+			this.completed = ko.observable(completed);
+			this.editing = ko.observable(editing);
+			this.display = ko.observable(display);
 		}
+	}
+
+	// saving and accessing local storage
+	this.getLocalData = () => {
+		if(localStorage && localStorage.getItem('todos')) {
+			var data = JSON.parse(localStorage.getItem('todos'));
+			for(const a of data) {
+				vm.todo.push(new note(a.info,a.editing,a.completed,a.display));
+			}
+		}
+		else
+			console.log('be');
 	}
 
 	// Creates a new note object
 	this.createNote = (input) => {
 		const todo = new note(input);
-		notes.unshift(todo);
 		return todo;
 	};
 
@@ -36,6 +49,7 @@ const viewModel = function() {
 			const newNote = this.createNote(this.entry());
 			this.todo.unshift(newNote);
 			this.entry('');
+			saveDataLocally(this);
 		}
 		else
 			return true;
@@ -59,6 +73,7 @@ const viewModel = function() {
 		const n=this.todo().indexOf(clickedNote)
 		this.todo().splice(n,1);
 		this.showLeft(this.todo().length);
+		saveDataLocally(this);
 		return true;
 	};
 
@@ -101,6 +116,7 @@ const viewModel = function() {
 				a.completed(true);
 			else
 				a.completed(false);
+		saveDataLocally(this);
 	};
 
 	// Clear all completed todos
@@ -113,6 +129,7 @@ const viewModel = function() {
 			}
 		this.showLeft(this.todo().length);
 		this.tickAll(false);
+		saveDataLocally(this);
 	};
 
 	// Show all todos
@@ -155,3 +172,5 @@ const viewModel = function() {
 
 const vm = new viewModel();
 ko.applyBindings(vm);
+
+vm.getLocalData();
